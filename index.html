@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -9,6 +9,38 @@
     <script src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- Pusher library for real-time communication -->
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+    
+    <!-- Pusher initialization script -->
+    <script>
+      // Enable pusher logging - don't include this in production
+      Pusher.logToConsole = true;
+      
+      // Initialize Pusher with your credentials
+      var pusher = new Pusher('49ed5dac5332dcd4c6a9', {
+        cluster: 'eu'
+      });
+      
+      // Subscribe to the channel
+      var channel = pusher.subscribe('my-channel');
+      
+      // Bind to events and log to console instead of using alert
+      channel.bind('my-event', function(data) {
+        console.log('Pusher Event Received:', JSON.stringify(data, null, 2));
+        console.log('Event Data:', data);
+      });
+      
+      // Additional logging for connection status
+      pusher.connection.bind('connected', function() {
+        console.log('Pusher: Connected successfully');
+      });
+      
+      pusher.connection.bind('error', function(err) {
+        console.error('Pusher Connection Error:', err);
+      });
+    </script>
   </head>
   <body id="state">
     <div id="step1">
