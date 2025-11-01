@@ -66,6 +66,47 @@ function onColorChanged(rgb) {
   }
 }
 
+// Function to change candle color based on color name from Pusher
+function changeColorFromPusher(colorName) {
+  // Check if candle is connected
+  if (!playbulbCandle.device || !playbulbCandle.device.gatt.connected) {
+    console.warn('Candle is not connected. Please connect first.');
+    return;
+  }
+  
+  // Convert color name to lowercase for case-insensitive matching
+  var color = colorName.toLowerCase();
+  
+  // Define RGB values for each color
+  var colorMap = {
+    'vert': [0, 255, 0],      // Green
+    'green': [0, 255, 0],     // Green (English)
+    'rouge': [255, 0, 0],     // Red
+    'red': [255, 0, 0],       // Red (English)
+    'bleu': [0, 0, 255],      // Blue
+    'blue': [0, 0, 255],      // Blue (English)
+    'orange': [255, 165, 0]   // Orange
+  };
+  
+  // Get RGB values for the requested color
+  var rgb = colorMap[color];
+  
+  if (!rgb) {
+    console.error('Unknown color:', colorName, '. Supported colors: vert, rouge, bleu, orange');
+    return;
+  }
+  
+  // Update global color variables
+  r = rgb[0];
+  g = rgb[1];
+  b = rgb[2];
+  
+  // Change the candle color using the currently selected effect
+  // This will use the same effect that the user has selected (or default to noEffect)
+  console.log('Changing candle color to', colorName, 'RGB:', rgb);
+  changeColor();
+}
+
 var img = new Image();
 img.src = 'color-wheel.png';
 img.onload = function() {

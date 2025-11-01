@@ -26,10 +26,43 @@
       // Subscribe to the channel
       var channel = pusher.subscribe('my-channel');
       
-      // Bind to events and log to console instead of using alert
+      // Bind to events and change candle color based on message
       channel.bind('my-event', function(data) {
         console.log('Pusher Event Received:', JSON.stringify(data, null, 2));
         console.log('Event Data:', data);
+        
+        // Extract color from the message
+        // The color can be in data.color, data.message, or data itself (if it's a string)
+        var colorName = null;
+        
+        if (data && typeof data === 'object') {
+          // Try to get color from various possible fields
+          colorName = data.color || data.message || data.name || data.text;
+        } else if (typeof data === 'string') {
+          // If data is directly a string, use it as the color name
+          colorName = data;
+        }
+        
+        // If we found a color name, change the candle color
+        if (colorName) {
+          console.log('Attempting to change candle color to:', colorName);
+          // Wait for app.js to be loaded, then call the function
+          // Try multiple times in case the script hasn't loaded yet
+          var attempts = 0;
+          var maxAttempts = 10;
+          var checkFunction = setInterval(function() {
+            attempts++;
+            if (typeof changeColorFromPusher === 'function') {
+              clearInterval(checkFunction);
+              changeColorFromPusher(colorName);
+            } else if (attempts >= maxAttempts) {
+              clearInterval(checkFunction);
+              console.error('changeColorFromPusher function not found after', maxAttempts, 'attempts. Make sure app.js is loaded.');
+            }
+          }, 100);
+        } else {
+          console.warn('No color found in Pusher message:', data);
+        }
       });
       
       // Additional logging for connection status
